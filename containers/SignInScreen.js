@@ -16,35 +16,47 @@ export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(
-        "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/log_in",
-        {
-          email: email,
-          password: password,
-        }
-      );
-      const userToken = "secret-token";
-      setToken(userToken);
-    } catch (error) {
-      console.log(error);
+  const submit = async () => {
+    if (email === "" || password === "") {
+      setErrorMessage("Please fill all fields");
+    } else {
+      try {
+        setErrorMessage("");
+        const { response } = await axios.post(
+          "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/log_in",
+          {
+            email: email,
+            password: password,
+          }
+        );
+        // const userToken = "secret-token";
+        // setToken(userToken);
+        alert("Vous êtes bien connectés");
+      } catch (error) {
+        console.log(error.response);
+        setErrorMessage("La connexion a échoué");
+      }
     }
   };
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.titleBloc}>
         <Image source={require("../assets/logo.png")} style={styles.logo} />
         <Text style={styles.title}>Sign In</Text>
       </View>
-      <View style={styles.marginTop}>
+      <View>
         <TextInput
           style={styles.input}
           placeholder="email"
           value={email}
           onChangeText={(text) => {
+            setErrorMessage("");
             setEmail(text);
           }}
         />
@@ -54,18 +66,20 @@ export default function SignInScreen({ setToken }) {
           secureTextEntry={true}
           value={password}
           onChangeText={(text) => {
+            setErrorMessage("");
             setPassword(text);
           }}
         />
       </View>
-      <View style={[styles.marginTop, styles.titleBloc]}>
-        {(email === "" || password === "") && (
-          <Text style={styles.errorMessage}>Please fill all fields</Text>
+      <View style={[styles.titleBloc]}>
+        {errorMessage && (
+          <Text style={styles.errorMessage}>{errorMessage}</Text>
         )}
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            fetchData();
+            setErrorMessage("");
+            submit();
           }}
         >
           <Text style={styles.textButton}>Sign in</Text>
@@ -85,7 +99,10 @@ export default function SignInScreen({ setToken }) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: Constants.statusBarHeight,
-    paddingTop: 30,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "space-around",
   },
   logo: {
     width: 120,
@@ -95,10 +112,8 @@ const styles = StyleSheet.create({
   titleBloc: {
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 80,
     gap: 20,
   },
-
   title: {
     fontSize: 25,
     fontWeight: "bold",
@@ -114,10 +129,6 @@ const styles = StyleSheet.create({
 
   errorMessage: {
     color: "#EB5A62",
-  },
-
-  marginTop: {
-    marginTop: 70,
   },
 
   button: {

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Button,
   Text,
   TextInput,
   View,
@@ -19,20 +18,62 @@ export default function SignUpScreen({ setToken }) {
   const [description, setDescription] = useState("");
   const [password, setPassword] = useState("");
   const [confimedPassword, setConfirmedPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const submit = async () => {
+    if (
+      email === "" ||
+      username === "" ||
+      description === "" ||
+      password === "" ||
+      confimedPassword === ""
+    ) {
+      setErrorMessage("Please fill all fields");
+      console.log("1");
+    } else if (password !== confimedPassword) {
+      setErrorMessage(
+        "Le mot de passe confirmé ne correspond pas au mot de passe saisi"
+      );
+      console.log("2");
+    } else {
+      console.log("3");
+      setErrorMessage("");
+      try {
+        const { response } = await axios.post(
+          "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/sign_up",
+          {
+            email: email,
+            username: username,
+            description: description,
+            password: password,
+          }
+        );
+        console.log(data);
+        alert("Le compte a été créé avec succès");
+      } catch (error) {
+        console.log(error.response);
+        setErrorMessage("L'inscription a échoué");
+      }
+    }
+  };
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.titleBloc}>
         <Image source={require("../assets/logo.png")} style={styles.logo} />
         <Text style={styles.title}>Sign Up</Text>
       </View>
-      <View style={styles.marginTop}>
+      <View>
         <TextInput
           style={styles.input}
           placeholder="email"
           value={email}
           onChangeText={(text) => {
             setEmail(text);
+            setErrorMessage("");
           }}
         />
         <TextInput
@@ -41,6 +82,7 @@ export default function SignUpScreen({ setToken }) {
           value={username}
           onChangeText={(text) => {
             setUsername(text);
+            setErrorMessage("");
           }}
         />
         <TextInput
@@ -51,6 +93,7 @@ export default function SignUpScreen({ setToken }) {
           textAlignVertical="top"
           onChangeText={(text) => {
             setDescription(text);
+            setErrorMessage("");
           }}
         />
         <TextInput
@@ -60,6 +103,7 @@ export default function SignUpScreen({ setToken }) {
           value={password}
           onChangeText={(text) => {
             setPassword(text);
+            setErrorMessage("");
           }}
         />
         <TextInput
@@ -69,12 +113,22 @@ export default function SignUpScreen({ setToken }) {
           value={confimedPassword}
           onChangeText={(text) => {
             setConfirmedPassword(text);
+            setErrorMessage("");
           }}
         />
       </View>
 
       <View style={[styles.titleBloc]}>
-        <TouchableOpacity style={styles.button}>
+        {errorMessage && (
+          <Text style={styles.errorMessage}>{errorMessage}</Text>
+        )}
+        <TouchableOpacity
+          style={styles.button}
+          onpress={() => {
+            submit();
+            setErrorMessage("");
+          }}
+        >
           <Text style={styles.textButton}>Sign up</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -94,7 +148,11 @@ export default function SignUpScreen({ setToken }) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: Constants.statusBarHeight,
-    paddingTop: 30,
+  },
+  contentContainer: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "space-around",
   },
   logo: {
     width: 120,
@@ -104,7 +162,6 @@ const styles = StyleSheet.create({
   titleBloc: {
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 70,
     gap: 20,
   },
 
@@ -133,10 +190,6 @@ const styles = StyleSheet.create({
 
   errorMessage: {
     color: "#EB5A62",
-  },
-
-  marginTop: {
-    marginTop: 70,
   },
 
   button: {
