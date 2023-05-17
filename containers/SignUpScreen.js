@@ -7,12 +7,13 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "@react-navigation/core";
+import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
 import Constants from "expo-constants";
 
 export default function SignUpScreen({ setToken }) {
+  const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
@@ -29,12 +30,10 @@ export default function SignUpScreen({ setToken }) {
       confimedPassword === ""
     ) {
       setErrorMessage("Please fill all fields");
-      console.log("1");
     } else if (password !== confimedPassword) {
       setErrorMessage(
         "Le mot de passe confirmé ne correspond pas au mot de passe saisi"
       );
-      console.log("2");
     } else {
       console.log("3");
       setErrorMessage("");
@@ -48,7 +47,7 @@ export default function SignUpScreen({ setToken }) {
             password: password,
           }
         );
-        console.log(data);
+        console.log({ response });
         alert("Le compte a été créé avec succès");
       } catch (error) {
         console.log(error.response);
@@ -124,9 +123,8 @@ export default function SignUpScreen({ setToken }) {
         )}
         <TouchableOpacity
           style={styles.button}
-          onpress={() => {
+          onPress={() => {
             submit();
-            setErrorMessage("");
           }}
         >
           <Text style={styles.textButton}>Sign up</Text>
@@ -151,7 +149,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     alignItems: "center",
-    flex: 1,
+    gap: 30,
     justifyContent: "space-around",
   },
   logo: {

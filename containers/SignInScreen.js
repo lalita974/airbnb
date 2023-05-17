@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/core";
+import { useNavigation } from "@react-navigation/native";
 import {
   Text,
   TextInput,
@@ -78,7 +78,6 @@ export default function SignInScreen({ setToken }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setErrorMessage("");
             submit();
           }}
         >
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight,
   },
   contentContainer: {
-    flex: 1,
+    gap: 30,
     justifyContent: "space-around",
   },
   logo: {
