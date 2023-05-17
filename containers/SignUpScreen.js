@@ -74,12 +74,7 @@ export default function SignUpScreen({ setToken }) {
       </View>
 
       <View style={[styles.titleBloc]}>
-        <TouchableOpacity
-          style={styles.button}
-          // onPress={() => {
-          //   fetchData();
-          // }}
-        >
+        <TouchableOpacity style={styles.button}>
           <Text style={styles.textButton}>Sign up</Text>
         </TouchableOpacity>
         <TouchableOpacity
