@@ -11,12 +11,14 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
 import Constants from "expo-constants";
+import { Feather } from "@expo/vector-icons";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = async () => {
     if (email === "" || password === "") {
@@ -24,16 +26,16 @@ export default function SignInScreen({ setToken }) {
     } else {
       try {
         setErrorMessage("");
-        const { response } = await axios.post(
+        const { data } = await axios.post(
           "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/log_in",
           {
             email: email,
             password: password,
           }
         );
-        // const userToken = "secret-token";
-        // setToken(userToken);
-        alert("Vous êtes bien connectés");
+        const userToken = data.token;
+        setToken(userToken);
+        alert("Vous êtes bien connecté");
       } catch (error) {
         console.log(error.response);
         setErrorMessage("La connexion a échoué");
@@ -60,16 +62,28 @@ export default function SignInScreen({ setToken }) {
             setEmail(text);
           }}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => {
-            setErrorMessage("");
-            setPassword(text);
-          }}
-        />
+        <View style={[styles.input, styles.password]}>
+          <TextInput
+            placeholder="password"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={(text) => {
+              setErrorMessage("");
+              setPassword(text);
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              setShowPassword(!showPassword);
+            }}
+          >
+            {showPassword ? (
+              <Feather name="eye-off" size={24} color="grey" />
+            ) : (
+              <Feather name="eye" size={24} color="grey" />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={[styles.titleBloc]}>
         {errorMessage && (
@@ -104,6 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   logo: {
+    marginTop: 30,
     width: 120,
     height: 120,
     resizeMode: "contain",
@@ -125,7 +140,11 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
   },
-
+  password: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   errorMessage: {
     color: "#EB5A62",
   },

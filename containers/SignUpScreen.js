@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
 import Constants from "expo-constants";
+import { Feather } from "@expo/vector-icons";
 
 export default function SignUpScreen({ setToken }) {
   const navigation = useNavigation();
@@ -20,6 +21,8 @@ export default function SignUpScreen({ setToken }) {
   const [password, setPassword] = useState("");
   const [confimedPassword, setConfirmedPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmedPassword, setShowConfirmedPassword] = useState(false);
 
   const submit = async () => {
     if (
@@ -35,10 +38,9 @@ export default function SignUpScreen({ setToken }) {
         "Le mot de passe confirmé ne correspond pas au mot de passe saisi"
       );
     } else {
-      console.log("3");
       setErrorMessage("");
       try {
-        const { response } = await axios.post(
+        const { data } = await axios.post(
           "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/sign_up",
           {
             email: email,
@@ -47,7 +49,8 @@ export default function SignUpScreen({ setToken }) {
             password: password,
           }
         );
-        console.log({ response });
+        const userToken = data.token;
+        setToken(userToken);
         alert("Le compte a été créé avec succès");
       } catch (error) {
         console.log(error.response);
@@ -95,26 +98,50 @@ export default function SignUpScreen({ setToken }) {
             setErrorMessage("");
           }}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            setErrorMessage("");
-          }}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="confirm password"
-          secureTextEntry={true}
-          value={confimedPassword}
-          onChangeText={(text) => {
-            setConfirmedPassword(text);
-            setErrorMessage("");
-          }}
-        />
+        <View style={[styles.input, styles.password]}>
+          <TextInput
+            placeholder="password"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              setErrorMessage("");
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              setShowPassword(!showPassword);
+            }}
+          >
+            {showPassword ? (
+              <Feather name="eye-off" size={24} color="grey" />
+            ) : (
+              <Feather name="eye" size={24} color="grey" />
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.input, styles.password]}>
+          <TextInput
+            placeholder="confirm password"
+            secureTextEntry={!showConfirmedPassword}
+            value={confimedPassword}
+            onChangeText={(text) => {
+              setConfirmedPassword(text);
+              setErrorMessage("");
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              setShowConfirmedPassword(!showConfirmedPassword);
+            }}
+          >
+            {showConfirmedPassword ? (
+              <Feather name="eye-off" size={24} color="grey" />
+            ) : (
+              <Feather name="eye" size={24} color="grey" />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={[styles.titleBloc]}>
@@ -156,6 +183,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     resizeMode: "contain",
+    marginTop: 30,
   },
   titleBloc: {
     justifyContent: "center",
@@ -175,7 +203,11 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
   },
-
+  password: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   inputDescription: {
     marginVertical: 30,
     marginHorizontal: 40,

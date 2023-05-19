@@ -5,11 +5,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import HomeScreen from "./containers/HomeScreen";
-import ProfileScreen from "./containers/ProfileScreen";
+import RoomScreen from "./containers/RoomScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
-import SplashScreen from "./containers/SplashScreen";
+import HeaderLogo from "./components/HearderLogo";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -87,21 +87,19 @@ export default function App() {
                       <Stack.Screen
                         name="Home"
                         options={{
-                          title: "My App",
-                          headerStyle: { backgroundColor: "red" },
-                          headerTitleStyle: { color: "white" },
+                          headerTitle: () => <HeaderLogo />,
                         }}
                       >
                         {() => <HomeScreen />}
                       </Stack.Screen>
 
                       <Stack.Screen
-                        name="Profile"
+                        name="Room"
                         options={{
-                          title: "User Profile",
+                          headerTitle: () => <HeaderLogo />,
                         }}
                       >
-                        {() => <ProfileScreen />}
+                        {() => <RoomScreen />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
@@ -120,7 +118,7 @@ export default function App() {
                   }}
                 >
                   {() => (
-                    <Stack.Navigator>
+                    <Stack.Navigator screenOptions={{ headerShown: false }}>
                       <Stack.Screen
                         name="Settings"
                         options={{
